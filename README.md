@@ -76,7 +76,7 @@ Vamos lá...
 3. Crie ou copie o arquivo **`Dockerfile`** dentro do seu diretório raiz:
 - Esse arquivo é respossável por definir o que vamos instalar no container do Airflow, no caso vamos definir a versão do `Python` que vamos usar e as bibliotecas que vamos precisar. Essas bibliotecas estão definidas no arquivo `requirements.txt` que vamos ver asseguir.
   
-    ![dockerfile](./img/dockerfile.png)
+    ![Dockerfile](./img/Dockerfile.png)
 
 4. Crie ou copie o arquivo **`requirements.txt`** dentro do seu diretório raiz:
 - Esse arquivo contém as bibliotecas que vamos instalar no `Python` do Airflow, ou seja, são as bibliotecas que os programas vão depender.
