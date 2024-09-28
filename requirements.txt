@@ -1,0 +1,3 @@
+pandas==2.1.0          # Instala a versão mais recente do pandas
+apache-airflow==2.7.2  # Certifique-se de que a versão seja compatível com seu setup
+
