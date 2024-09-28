@@ -76,7 +76,7 @@ Vamos lá...
 3. Crie ou copie o arquivo **`Dockerfile`** dentro do seu diretório raiz:
 - Esse arquivo é respossável por definir o que vamos instalar no container do Airflow, no caso vamos definir a versão do `Python` que vamos usar e as bibliotecas que vamos precisar. Essas bibliotecas estão definidas no arquivo `requirements.txt` que vamos ver asseguir.
   
-    ![Dockerfile](./img/Dockerfile.png)
+    ![dockerfile](./img/dockerfile.png)
 
 4. Crie ou copie o arquivo **`requirements.txt`** dentro do seu diretório raiz:
 - Esse arquivo contém as bibliotecas que vamos instalar no `Python` do Airflow, ou seja, são as bibliotecas que os programas vão depender.
@@ -102,7 +102,7 @@ Vamos lá...
     docker-compose up Airflow-init
     ```
   Veja: 
-  ![Airflow-init](./img/Airflow-init.png)
+  ![airflow-init](./img/airflow-init.png)
 
   - Obs.: é normal demorar, pois nessa hora estamos baixando as imagens dos containers, configurando conforme as parâmetrizações que fizemos e inicializando alguns serviços.
   
@@ -116,7 +116,7 @@ Vamos lá...
     docker-compose up
     ```
   Veja: 
-  ![Airflow-up](./img/Airflow-up.png)
+  ![airflow-up](./img/airflow-up.png)
 
 **Pronto, agora seu Airflow está no "AR"**
 
@@ -126,7 +126,7 @@ Vamos lá...
 
 - Para acessar o Airflow você deve usar o login = `Airflow` e a senha = `Airflow`:
 
-  ![login_Airflow](./img/login_Airflow.png)
+  ![login_airflow](./img/login_airflow.png)
 
 - Veja que no Docker Desktop aparecerá os containers iniciados:
 
@@ -176,7 +176,7 @@ Para a DAG carregar no Airflow precisamos criar um arquivo tipo `.py`, ou seja, 
 
 ### Veja como ficou nossa DAG no Airflow:
 
-![dags_Airflow](./img/dags_Airflow.png)
+![dags_airflow](./img/dags_airflow.png)
 
 Observe que ela está desativada, para isso você precisa ativa-la manualmente ou iniciar a DAG com o run.
 
