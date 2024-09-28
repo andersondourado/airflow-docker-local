@@ -3,13 +3,13 @@ venv/
 
 # Ignorar todos os arquivos dentro de logs/, mas manter o diretório
 logs/*
+!logs/.gitkeep  # Para garantir que o diretório seja mantido, você pode adicionar um arquivo vazio .gitkeep
 
 # Ignorar o diretório __pycache__ dentro de dags/
 dags/__pycache__/
 *.pyc              # Arquivos de bytecode Python
 
 # Manter pastas
-!logs/.gitkeep  # Para garantir que o diretório seja mantido, você pode adicionar um arquivo vazio .gitkeep
 !plugins/.gitkeep  # Para garantir que o diretório seja mantido, você pode adicionar um arquivo vazio .gitkeep
 !config/.gitkeep  # Para garantir que o diretório seja mantido, você pode adicionar um arquivo vazio .gitkeep
 !dados/output/.gitkeep  # Para garantir que o diretório seja mantido, você pode adicionar um arquivo vazio .gitkeep
