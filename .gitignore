@@ -1,5 +1,6 @@
 # Ignorar todos os arquivos dentro de logs/, mas manter o diretório
 logs/*
+!logs/l.log
 
 # Ignorar o diretório venv/ (ambientes virtuais)
 venv/
