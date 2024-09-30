@@ -16,6 +16,11 @@ Bora?
 1. Verifique a compatibilidade:
 - Certifique-se de que a **virtualização** esteja habilitada no BIOS do seu computador (pressione `Ctrl + Shift + Esc`, vá para aba de desempenho e verifique a virtualização).
 - O Windows 11 precisa estar rodando na versão **64-bit** com o **WSL 2 habilitado**.
+    
+    Dica: Caso o WSL não esteja instalado, você pode executar o comando abaixo no `PowerShell` como Administrador:
+    ```Bash
+    wsl --install
+    ```
 
 2. Instale o Docker Desktop:
 - Baixe o Docker Desktop para Windows diretamente do [**site oficial do Docker**](https://www.docker.com/).
@@ -36,7 +41,7 @@ Bora?
 
 ### Parte 2: Configurar o Airflow no Docker
 
-Nesta parte vamos instalar a **versão 2.9.3 do Airflow**. Confira [aqui no site do Airflow a documentação dessa versão.](https://Airflow.apache.org/docs/apache-Airflow/2.9.3/). Tem muitas dicas legais sobre a instalação, configurações e principalmente de uso para montar DAGs.
+Nesta parte vamos instalar a **versão 2.9.3 do Airflow**. Confira [aqui no site do Airflow a documentação dessa versão.](https://airflow.apache.org/docs/apache-airflow/2.9.3/). Tem muitas dicas legais sobre a instalação, configurações e principalmente de uso para montar DAGs.
 
 Vamos lá...
 
@@ -46,22 +51,22 @@ Vamos lá...
   
    ![estrutura_projeto](./img/estrutura_projeto.png)
 
-   Obs.: Eu costumo usar o **VS Code** para estruturar os meus projetos e neste exemplo o diretório se chama *Airflow-docker-local*. É nele que vamos criar e entender cada arquivo desse projeto.
+   Obs.: Eu costumo usar o **VS Code** para estruturar os meus projetos e neste exemplo o diretório se chama *airflow-docker-local*. É nele que vamos criar e entender cada arquivo desse projeto.
    
 2. Crie ou copie o arquivo **`docker-compose.yaml`** dentro do seu diretório raiz:
 - Esse arquivo contém todas as configurações dos containers que precisamos criar, no caso são:
   - **redis**: o Redis é um banco de dados de código aberto que armazena dados na memória e é um ponto de comunicação entre o Airflow e os Workers, funcionando de forma assíncrona e buferizada.
   - **postgres**: o PostgreSQL é um banco de dados relacional onde o Ariflow armazena todo seu histórico e configurações das DAGs.
-  - **apache/Airflow**: é o container onde será executada a aplicação do Airflow como serviço usando o **redis** e o **postgres**.
+  - **apache/airflow**: é o container onde será executada a aplicação do Airflow como serviço usando o **redis** e o **postgres**.
   
-- Você pode copiar esse arquivo do site do Airflow >> [docker-compose.yaml](https://Airflow.apache.org/docs/apache-Airflow/2.9.3/docker-compose.yaml)
+- Você pode copiar esse arquivo do site do Airflow >> [docker-compose.yaml](https://airflow.apache.org/docs/apache-airflow/2.9.3/docker-compose.yaml)
 - Ou baixar/usar o exemplo desse projeto.
   
   **Qual a diferença?**
 
   No arquivo do projeto eu fiz algumas customizações, ou seja, adaptações para o case que vamos testar, veja:
 
-  - Nessa linha alteramos a variável `Airflow__CORE__LOAD_EXAMPLES` para `'false'`, pois não queremos carregar os VÁRIOS exemplos prontos de DAGs na imagem do Airflow.
+  - Nessa linha alteramos a variável `AIRFLOW__CORE__LOAD_EXAMPLES` para `'false'`, pois não queremos carregar os VÁRIOS exemplos prontos de DAGs na imagem do Airflow.
 
     ![yaml_exemplos_false](./img/yaml_exemplos_false.png)
 
@@ -96,10 +101,11 @@ Vamos lá...
 
 6. Inicializar os serviços dos containers:
 - Esse passo é respossável por inicializar os bancos de dados do Airflow e executar as tarefas de configurações necessárias na primeira vez que o Airflow é iniciado, ou seja, aqui vamos preperar o "terreno" para iniciar o serviço do Airflow.
-- Abra o `PowerShell` ou `CMD` na pasta raiz do nosso projeto (no meu caso será a pasta `Airflow-docker-local`) e execute o comando abaixo:
+- Abra o `PowerShell` ou `CMD` na pasta raiz do nosso projeto (no meu caso será a pasta `airflow-docker-local`) e execute o comando abaixo:
 
     ```Bash
-    docker-compose up Airflow-init
+    docker build --no-cache -t airflow-init .
+    docker-compose up airflow-init
     ```
   Veja: 
   ![airflow-init](./img/airflow-init.png)
@@ -124,7 +130,7 @@ Vamos lá...
 - Por padrão o serviço será inicado no `localhost` na porta `8080`. Acesse pelo link abaixo:
   - http://localhost:8080/home
 
-- Para acessar o Airflow você deve usar o login = `Airflow` e a senha = `Airflow`:
+- Para acessar o Airflow você deve usar o login = `airflow` e a senha = `airflow`:
 
   ![login_airflow](./img/login_airflow.png)
 
@@ -138,14 +144,21 @@ Vamos lá...
     ```Bash
     docker-compose down
     ```
+  
+  Obs.: Para forçar a instalação das bibliotecas e novas configurações, sugiro estes comandos, serão mais úteis. Sugiro explorar mais os comandos de docker.
+    ```Bash
+    docker-compose down --volumes --rmi all
+    docker-compose up airflow-init
+    docker-compose up --build
+    ```
 
-## **Criando uma DAG no Airflow**
+### Parte 3 **Criando uma DAG no Airflow**
 
 Nessa parte vamos criar uma **DAG simples** para testar o ArFlow.
 
 Bom, primeiro temos que definir o que vamos testar, ou seja, qual o case?
 
-### Case:
+#### **Case:**
 
 > Vamos simular um processo que vai ler um arquivo em **`.csv`**, validar se o arquivo esperado existe, se o arquivo existir, ele vai carregar o arquivo em um dataframe do ***pandas*** e vai salvará um novo arquivo em um determinado diretório (output) incuindo uma data de processamento dentro do arquivo. Caso o arquivo não exista, a DAG vai enviar uma mensagem na console de log do Airflow e vai finalizar com sucesso.
 
@@ -161,7 +174,7 @@ Bom, primeiro temos que definir o que vamos testar, ou seja, qual o case?
 
     ![dir_dados](./img/dir_dados.png)
 
-**Montando a DAG**
+#### **Montando a DAG**
 
 O intuito aqui **NÂO** é ensinar a programrar ou aprofundar em como criar uma DAG e sim testar o Airflow, ok?
 
@@ -174,7 +187,7 @@ Para a DAG carregar no Airflow precisamos criar um arquivo tipo `.py`, ou seja, 
 
 - Dica: Sugiro que explore o arquivo `.dags/processa_csv.py`, pois tentei explicar bem cada etapa do processo com os comentários.
 
-### Veja como ficou nossa DAG no Airflow:
+#### Veja como ficou nossa DAG no Airflow:
 
 ![dags_airflow](./img/dags_airflow.png)
 
@@ -189,13 +202,14 @@ Observe que ela está desativada, para isso você precisa ativa-la manualmente o
     ![start_dag](./img/start_dag.png)
 
 
-### Uhullll, nossa DAG rodou!!!
+#### Uhullll, nossa DAG rodou!!!
 
 ![run_dag](./img/run_dag.png)
 
 Não se assuste, nossa DAG vai executar de minuto em minuto, você pode alterar isso depois nas configurações da DAG no arquivo `.dags/processa_csv.py`.
 
-### Agora é com vocês, espero que tenha ajudado!!!
+
+## Agora é com vocês, espero que tenha ajudado!!!
 
 ----------------
 ----------------

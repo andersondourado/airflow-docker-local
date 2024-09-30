@@ -49,8 +49,8 @@ x-airflow-common:
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.9.3}
-  # build: .
+  #image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.9.3-python3.8} # Não utiliza o Dockerfile, ou seja, ignora as configurações do Dockerfile
+  build: . # Libera a execução do Dockerfile
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -70,9 +70,13 @@ x-airflow-common:
     # WARNING: Use _PIP_ADDITIONAL_REQUIREMENTS option ONLY for a quick checks
     # for other purpose (development, test and especially production usage) build/extend Airflow image.
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    #_PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:- apache-airflow==2.9.3 pandas==2.1.4 oracledb==2.4.1} # Podemos instalar e testar as dependências dessa forma, mas não á recomendado pelo Airflow
     # The following line can be used to set a custom config file, stored in the local config folder
     # If you want to use it, outcomment it and replace airflow.cfg with the name of your config file
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
+    #AIRFLOW__WEBSERVER__SHOW_TRIGGER_FORM_IF_NO_PARAMS: 'true'  # Ativa o formulário de execução manual na interface web do Airflow sempre que uma DAG for ativada manualmente, mesmo que o DAG não tenha parâmetros configuráveis.
+    #PYTHONPATH: ${PYTHONPATH}
+    #PYTHONDONTWRITEBYTECODE: ${PYTHONDONTWRITEBYTECODE} # Configura o Python para não gerar arquivos .pyc (bytecode) nos diretórios onde os scripts Python estão localizados ao compilar, isso é bacana para ambiente de dev.
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
